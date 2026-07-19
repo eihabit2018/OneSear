@@ -13,6 +13,41 @@
     <link rel="stylesheet" href="styles/main.css" />
   </head>
   <body>
+    <!-- 背景设置按钮 -->
+    <button
+      id="bg-settings-btn"
+      class="bg-settings-btn"
+      type="button"
+      title="背景设置"
+      aria-label="背景设置"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <polyline points="21 15 16 10 5 21" />
+      </svg>
+    </button>
+
+    <!-- 背景设置菜单 -->
+    <div id="bg-menu" class="bg-menu" hidden>
+      <button id="bg-upload-btn" class="bg-menu-item" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+        选择背景图片
+      </button>
+      <button id="bg-reset-btn" class="bg-menu-item" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <polyline points="1 4 1 10 7 10" />
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+        </svg>
+        恢复默认背景
+      </button>
+    </div>
+    <input id="bg-file-input" type="file" accept="image/*" hidden />
+
     <main class="page">
       <div class="hero">
         <p class="eyebrow">One Search</p>

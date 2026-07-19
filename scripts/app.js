@@ -14,6 +14,8 @@ import {
 import { initHintTicker } from "./hint-ticker.js";
 import { initSubtitleTicker } from "./ticker.js";
 
+// ---------- DOM refs (all in one place, before any handlers) ----------
+
 const form = document.getElementById("search-form");
 const input = document.getElementById("search-input");
 const result = document.getElementById("result");
@@ -26,6 +28,12 @@ const historyPanel = document.getElementById("history-panel");
 const historyList = document.getElementById("history-list");
 const historyClear = document.getElementById("history-clear");
 const historyLayoutToggle = document.getElementById("history-layout-toggle");
+
+const bgSettingsBtn = document.getElementById("bg-settings-btn");
+const bgMenu = document.getElementById("bg-menu");
+const bgUploadBtn = document.getElementById("bg-upload-btn");
+const bgResetBtn = document.getElementById("bg-reset-btn");
+const bgFileInput = document.getElementById("bg-file-input");
 
 const HISTORY_LAYOUT_KEY = "one-search-history-layout";
 let historyLayout = localStorage.getItem(HISTORY_LAYOUT_KEY) === "compact" ? "compact" : "detail";
@@ -359,15 +367,7 @@ historyLayoutToggle.addEventListener("click", () => {
   renderHistoryList();
 });
 
-document.addEventListener("click", (event) => {
-  if (
-    !historyPanel.hidden &&
-    !historyPanel.contains(event.target) &&
-    !historyToggle.contains(event.target)
-  ) {
-    setHistoryOpen(false);
-  }
-});
+// document click-to-close handlers are registered at the bottom of the file
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -423,6 +423,10 @@ input.addEventListener("keydown", (event) => {
   }
 
   if (event.key === "Escape") {
+    if (!bgMenu.hidden) {
+      closeBgMenu();
+      return;
+    }
     if (!historyPanel.hidden) {
       setHistoryOpen(false);
       return;
@@ -437,6 +441,133 @@ input.addEventListener("keydown", (event) => {
 input.addEventListener("blur", () => {
   window.setTimeout(hideMentionMenu, 120);
 });
+
+// ---------- Background settings (IndexedDB) ----------
+
+const BG_DB_NAME = "one-search";
+const BG_STORE = "background";
+const BG_KEY = "bg";
+
+function openBgDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(BG_DB_NAME, 1);
+    req.addEventListener("upgradeneeded", () => {
+      if (!req.result.objectStoreNames.contains(BG_STORE)) {
+        req.result.createObjectStore(BG_STORE);
+      }
+    });
+    req.addEventListener("success", () => resolve(req.result));
+    req.addEventListener("error", () => reject(req.error));
+  });
+}
+
+async function saveBgToDB(dataUrl) {
+  const db = await openBgDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(BG_STORE, "readwrite");
+    tx.objectStore(BG_STORE).put(dataUrl, BG_KEY);
+    tx.addEventListener("complete", () => resolve());
+    tx.addEventListener("error", () => reject(tx.error));
+  });
+}
+
+async function loadBgFromDB() {
+  const db = await openBgDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(BG_STORE, "readonly");
+    const req = tx.objectStore(BG_STORE).get(BG_KEY);
+    req.addEventListener("success", () => resolve(req.result ?? null));
+    req.addEventListener("error", () => reject(req.error));
+  });
+}
+
+async function removeBgFromDB() {
+  const db = await openBgDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(BG_STORE, "readwrite");
+    tx.objectStore(BG_STORE).delete(BG_KEY);
+    tx.addEventListener("complete", () => resolve());
+    tx.addEventListener("error", () => reject(tx.error));
+  });
+}
+
+function applyBackground(dataUrl) {
+  document.body.style.backgroundImage = `url(${dataUrl})`;
+  document.body.classList.add("has-custom-bg");
+}
+
+function removeBackground() {
+  document.body.style.backgroundImage = "";
+  document.body.classList.remove("has-custom-bg");
+}
+
+async function loadBackground() {
+  try {
+    const saved = await loadBgFromDB();
+    if (saved) {
+      applyBackground(saved);
+    }
+  } catch {
+    // IndexedDB unavailable — ignore
+  }
+}
+
+function toggleBgMenu() {
+  const willOpen = bgMenu.hidden;
+  bgMenu.hidden = !willOpen;
+  bgSettingsBtn.classList.toggle("is-open", willOpen);
+}
+
+function closeBgMenu() {
+  bgMenu.hidden = true;
+  bgSettingsBtn.classList.remove("is-open");
+}
+
+bgSettingsBtn.addEventListener("click", toggleBgMenu);
+
+bgUploadBtn.addEventListener("click", () => {
+  bgFileInput.click();
+});
+
+bgFileInput.addEventListener("change", async () => {
+  const file = bgFileInput.files[0];
+  bgFileInput.value = "";
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.addEventListener("load", async () => {
+    await saveBgToDB(reader.result);
+    applyBackground(reader.result);
+  });
+  reader.readAsDataURL(file);
+  closeBgMenu();
+});
+
+bgResetBtn.addEventListener("click", async () => {
+  await removeBgFromDB();
+  removeBackground();
+  closeBgMenu();
+});
+
+// click outside → close any open panel / menu
+document.addEventListener("click", (event) => {
+  if (
+    !historyPanel.hidden &&
+    !historyPanel.contains(event.target) &&
+    !historyToggle.contains(event.target)
+  ) {
+    setHistoryOpen(false);
+  }
+  if (
+    !bgMenu.hidden &&
+    !bgMenu.contains(event.target) &&
+    !bgSettingsBtn.contains(event.target)
+  ) {
+    closeBgMenu();
+  }
+});
+
+loadBackground();
 
 initSubtitleTicker(document.getElementById("subtitle-line"));
 updateHistoryLayoutToggle();

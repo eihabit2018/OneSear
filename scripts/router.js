@@ -112,6 +112,8 @@ const ALIAS_INDEX = PROVIDERS.flatMap((provider) =>
   })),
 );
 
+// ---------- Lookup ----------
+
 export function findProviderByAlias(rawAlias) {
   const alias = rawAlias.trim().toLowerCase();
   if (!alias) {
