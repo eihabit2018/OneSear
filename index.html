@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>One Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <main class="page">
+      <div class="hero">
+        <p class="eyebrow">One Search</p>
+        <h1>你想要什么？</h1>
+        <div class="subtitle-ticker" aria-live="polite">
+          <p id="subtitle-line" class="subtitle-line"></p>
+        </div>
+
+        <form id="search-form" class="search-form" autocomplete="off">
+          <div class="search-shell">
+            <div class="search-box">
+              <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+              <input
+                id="search-input"
+                type="search"
+                name="q"
+                placeholder="在你想去的平台搜索…  @平台名"
+                autofocus
+                enterkeyhint="search"
+              />
+              <button type="submit" aria-label="搜索">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+            </div>
+            <div id="mention-menu" class="mention-menu" hidden role="listbox"></div>
+          </div>
+        </form>
+
+        <div id="result" class="result" hidden>
+          <div class="result-main">
+            <span id="result-badge" class="result-badge"></span>
+            <p id="result-text" class="result-text"></p>
+          </div>
+          <div id="alternatives" class="alternatives"></div>
+        </div>
+
+        <div class="toolbar">
+          <div class="hint-ticker" aria-live="polite">
+            <p id="hint-line" class="hint-line"></p>
+          </div>
+          <button
+            id="history-toggle"
+            type="button"
+            class="history-toggle"
+            aria-expanded="false"
+            aria-controls="history-panel"
+          >
+            我查看过
+          </button>
+        </div>
+
+        <div id="history-panel" class="history-panel" hidden>
+          <div class="history-header">
+            <h2>我查看过</h2>
+            <div class="history-header-actions">
+              <button
+                id="history-layout-toggle"
+                type="button"
+                class="history-layout-toggle"
+                hidden
+                title="切换列表显示方式"
+                aria-label="切换列表显示方式"
+              >
+                紧凑
+              </button>
+              <button id="history-clear" type="button" class="history-clear" hidden>
+                清空全部
+              </button>
+            </div>
+          </div>
+          <div id="history-list" class="history-list"></div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="scripts/app.js"></script>
+  </body>
+</html>
