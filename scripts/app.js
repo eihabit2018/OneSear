@@ -35,6 +35,10 @@ const bgUploadBtn = document.getElementById("bg-upload-btn");
 const bgResetBtn = document.getElementById("bg-reset-btn");
 const bgFileInput = document.getElementById("bg-file-input");
 
+const exploreToggle = document.getElementById("explore-toggle");
+const explorePanel = document.getElementById("explore-panel");
+const exploreModules = document.getElementById("explore-modules");
+
 const HISTORY_LAYOUT_KEY = "one-search-history-layout";
 let historyLayout = localStorage.getItem(HISTORY_LAYOUT_KEY) === "compact" ? "compact" : "detail";
 
@@ -353,6 +357,7 @@ historyToggle.addEventListener("click", () => {
   setHistoryOpen(willOpen);
   if (willOpen) {
     renderHistoryList();
+    if (!explorePanel.hidden) closeExplorePanel();
   }
 });
 
@@ -423,6 +428,10 @@ input.addEventListener("keydown", (event) => {
   }
 
   if (event.key === "Escape") {
+    if (!explorePanel.hidden) {
+      closeExplorePanel();
+      return;
+    }
     if (!bgMenu.hidden) {
       closeBgMenu();
       return;
@@ -549,6 +558,167 @@ bgResetBtn.addEventListener("click", async () => {
   closeBgMenu();
 });
 
+// ---------- Explore / navigation panel ----------
+
+function setExploreOpen(open) {
+  explorePanel.hidden = !open;
+  exploreToggle.setAttribute("aria-expanded", String(open));
+  hintTicker.setExploreOpen(open);
+}
+
+// ---------- Navigation data & rendering ----------
+
+const FALLBACK_FAVICON =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b6d85' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='2' y1='12' x2='22' y2='12'/%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/%3E%3C/svg%3E";
+
+function faviconUrl(url) {
+  try {
+    const host = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${host}&sz=32`;
+  } catch {
+    return FALLBACK_FAVICON;
+  }
+}
+
+function renderExploreModules(data) {
+  exploreModules.replaceChildren();
+
+  // ---- section-level horizontal tab bar ----
+  const sectionTabs = document.createElement("div");
+  sectionTabs.className = "explore-section-tabs";
+
+  let activeSection = data.findIndex((s) => s.categories && s.categories.length > 0);
+  if (activeSection < 0) activeSection = 0;
+
+  function showSection(index) {
+    activeSection = index;
+    for (const [i, tab] of [...sectionTabs.children].entries()) {
+      tab.classList.toggle("is-active", i === index);
+    }
+
+    const section = data[index];
+
+    // ensure a module-body wrapper exists
+    let body = exploreModules.querySelector(".explore-module-body");
+    if (body) body.replaceChildren();
+    else {
+      body = document.createElement("div");
+      body.className = "explore-module-body";
+      exploreModules.appendChild(body);
+    }
+
+    const catTabs = document.createElement("div");
+    catTabs.className = "explore-tabs";
+
+    const content = document.createElement("div");
+    content.className = "explore-content";
+
+    let activeCat = 0;
+
+    function showCategory(ci) {
+      activeCat = ci;
+      for (const [i, tab] of [...catTabs.children].entries()) {
+        tab.classList.toggle("is-active", i === ci);
+      }
+      const cat = section.categories[ci];
+      content.replaceChildren();
+      const grid = document.createElement("div");
+      grid.className = "explore-grid";
+      for (const link of cat.links) {
+        const card = document.createElement("a");
+        card.className = "explore-site-card";
+        card.href = link.url;
+        card.target = "_blank";
+        card.rel = "noopener noreferrer";
+
+        const img = document.createElement("img");
+        img.className = "explore-favicon";
+        img.src = faviconUrl(link.url);
+        img.alt = "";
+        img.loading = "lazy";
+        img.addEventListener("error", () => {
+          img.src = FALLBACK_FAVICON;
+        });
+
+        const name = document.createElement("span");
+        name.className = "explore-site-name";
+        name.textContent = link.name;
+
+        card.append(img, name);
+        grid.appendChild(card);
+      }
+      content.appendChild(grid);
+    }
+
+    for (const [i, cat] of section.categories.entries()) {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "explore-tab";
+      tab.textContent = cat.name;
+      tab.addEventListener("click", () => showCategory(i));
+      catTabs.appendChild(tab);
+    }
+
+    showCategory(0);
+    body.append(catTabs, content);
+  }
+
+  // build section tabs
+  for (const [i, section] of data.entries()) {
+    const tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "explore-section-tab";
+    tab.textContent = section.title;
+    if (!section.categories || section.categories.length === 0) {
+      tab.classList.add("is-disabled");
+    } else {
+      tab.addEventListener("click", () => showSection(i));
+    }
+    if (i === activeSection) tab.classList.add("is-active");
+    sectionTabs.appendChild(tab);
+  }
+
+  exploreModules.append(sectionTabs);
+  showSection(activeSection);
+}
+
+async function loadNavData() {
+  try {
+    const res = await fetch("data/navigation.json");
+    if (!res.ok) throw new Error("not found");
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+async function openExplorePanel() {
+  setExploreOpen(true);
+
+  // load and render navigation if first open
+  if (!exploreModules.children.length) {
+    const data = await loadNavData();
+    renderExploreModules(data);
+  }
+}
+
+function toggleExplorePanel() {
+  if (explorePanel.hidden) {
+    openExplorePanel();
+    if (!historyPanel.hidden) setHistoryOpen(false);
+  } else {
+    closeExplorePanel();
+  }
+}
+
+function closeExplorePanel() {
+  setExploreOpen(false);
+}
+
+exploreToggle.addEventListener("click", toggleExplorePanel);
+
+// ---------- History panel ----------
+
 // click outside → close any open panel / menu
 document.addEventListener("click", (event) => {
   if (
@@ -564,6 +734,13 @@ document.addEventListener("click", (event) => {
     !bgSettingsBtn.contains(event.target)
   ) {
     closeBgMenu();
+  }
+  if (
+    !explorePanel.hidden &&
+    !explorePanel.contains(event.target) &&
+    !exploreToggle.contains(event.target)
+  ) {
+    closeExplorePanel();
   }
 });
 

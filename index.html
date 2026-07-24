@@ -94,6 +94,15 @@
             <p id="hint-line" class="hint-line"></p>
           </div>
           <button
+            id="explore-toggle"
+            type="button"
+            class="history-toggle"
+            aria-expanded="false"
+            aria-controls="explore-panel"
+          >
+            随便看看
+          </button>
+          <button
             id="history-toggle"
             type="button"
             class="history-toggle"
@@ -124,6 +133,10 @@
             </div>
           </div>
           <div id="history-list" class="history-list"></div>
+        </div>
+
+        <div id="explore-panel" class="explore-panel" hidden>
+          <div id="explore-modules" class="explore-modules"></div>
         </div>
       </div>
     </main>

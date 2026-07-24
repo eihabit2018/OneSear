@@ -1,0 +1,121 @@
+[
+  {
+    "title": "启动",
+    "categories": [
+      {
+        "name": "资讯",
+        "links": [
+          { "name": "网易新闻", "url": "https://news.163.com/" },
+          { "name": "晚点报道", "url": "https://www.latepost.com/site/index" },
+          { "name": "界面新闻", "url": "https://www.jiemian.com/" },
+          { "name": "IT之家", "url": "https://www.ithome.com/" },
+          { "name": "少数派", "url": "https://sspai.com/" },
+          { "name": "健康界", "url": "https://www.cn-healthcare.com/" },
+          { "name": "理想生活", "url": "https://www.toodaylab.com/" },
+          { "name": "机核", "url": "https://www.gcores.com/" }
+        ]
+      },
+      {
+        "name": "榜单",
+        "links": [
+          { "name": "全网热榜", "url": "https://rebang.today/" },
+          { "name": "即时热榜", "url": "https://nowhots.com/" },
+          { "name": "抽屉热榜", "url": "https://dig.ichouti.cn/" },
+          { "name": "猫眼榜单", "url": "https://piaofang.maoyan.com/" },
+          { "name": "抖音热榜", "url": "https://www.douyin.com/hot" },
+          { "name": "知乎圆桌", "url": "https://www.zhihu.com/roundtable" },
+          { "name": "B站排行", "url": "https://www.bilibili.com/v/popular/rank/all" },
+          { "name": "科学辟谣", "url": "https://piyao.kepuchina.cn/rumor/rumorlist" }
+        ]
+      },
+      {
+        "name": "搜索",
+        "links": [
+          { "name": "中国非遗", "url": "https://www.ihchina.cn/" },
+          { "name": "中国行研", "url": "https://www.seedhangyan.com/" },
+          { "name": "术语在线", "url": "https://www.termonline.cn/" },
+          { "name": "丁香园", "url": "https://search.dxy.cn/" },
+          { "name": "寻找类似", "url": "https://leisidianying.com/" },
+          { "name": "懒盘搜索", "url": "https://lzpanx.com/" },
+          { "name": "无版权图", "url": "https://www.cosmos.so/public-work" },
+          { "name": "AI 搜索", "url": "https://www.perplexity.ai/" }
+        ]
+      },
+      {
+        "name": "邮箱",
+        "links": [
+          { "name": "QQ邮箱", "url": "https://mail.qq.com/" },
+          { "name": "126邮箱", "url": "https://www.126.com/" },
+          { "name": "163邮箱", "url": "https://mail.163.com/" },
+          { "name": "微软邮箱", "url": "https://outlook.com/" },
+          { "name": "谷歌邮箱", "url": "https://mail.google.com/" },
+          { "name": "腾讯企业邮", "url": "https://exmail.qq.com/" },
+          { "name": "阿里企业邮", "url": "https://qiye.aliyun.com/" },
+          { "name": "网易企业邮", "url": "https://mail.qiye.163.com/static/login/" }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "创造",
+    "categories": [
+      {
+        "name": "写作",
+        "links": [
+          { "name": "Notion", "url": "https://www.notion.so" },
+          { "name": "FlowUs", "url": "https://flowus.cn" },
+          { "name": "腾讯文档", "url": "https://docs.qq.com" },
+          { "name": "石墨文档", "url": "https://shimo.im" },
+          { "name": "飞书文档", "url": "https://feishu.cn" },
+          { "name": "简书", "url": "https://www.jianshu.com" },
+          { "name": "知乎创作中心", "url": "https://www.zhihu.com" },
+          { "name": "微信公众号平台", "url": "https://mp.weixin.qq.com" }
+        ]
+      },
+      {
+        "name": "编程",
+        "links": [
+          { "name": "GitHub", "url": "https://github.com" },
+          { "name": "Gitee", "url": "https://gitee.com" },
+          { "name": "GitLab", "url": "https://gitlab.com" },
+          { "name": "Cursor", "url": "https://cursor.com" },
+          { "name": "Cloudflare", "url": "https://dash.cloudflare.com" },
+          { "name": "Vercel", "url": "https://vercel.com" },
+          { "name": "Netlify", "url": "https://app.netlify.com" },
+          { "name": "CodePen", "url": "https://codepen.io" }
+        ]
+      },
+      {
+        "name": "工具",
+        "links": [
+          { "name": "Figma", "url": "https://figma.com" },
+          { "name": "Canva", "url": "https://www.canva.cn" },
+          { "name": "Excalidraw", "url": "https://excalidraw.com" },
+          { "name": "ProcessOn", "url": "https://processon.com" },
+          { "name": "draw.io", "url": "https://app.diagrams.net" },
+          { "name": "Xmind", "url": "https://www.xmind.cn/" },
+          { "name": "傲软录屏", "url": "https://www.apowersoft.cn/" },
+          { "name": "文档格式转化", "url": "https://www.ilovepdf.com/" }
+        ]
+      },
+      {
+        "name": "AI",
+        "links": [
+          { "name": "ChatGPT", "url": "https://chatgpt.com" },
+          { "name": "DeepSeek", "url": "https://chat.deepseek.com" },
+          { "name": "Kimi", "url": "https://kimi.com" },
+          { "name": "Gemini", "url": "https://gemini.google.com" },
+          { "name": "豆包", "url": "https://www.doubao.com" },
+          { "name": "元宝", "url": "https://yuanbao.tencent.com" },
+          { "name": "Midjourney", "url": "https://www.midjourney.com" },
+          { "name": "即梦", "url": "https://jimeng.jianying.com" }
+        ]
+      }
+    ]
+  },
+  { "title": "成长", "categories": [] },
+  { "title": "探索", "categories": [] },
+  { "title": "滋养", "categories": [] },
+  { "title": "生活", "categories": [] },
+  { "title": "其他", "categories": [] }
+]
