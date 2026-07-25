@@ -64,11 +64,11 @@
         "links": [
           { "name": "Notion", "url": "https://www.notion.so" },
           { "name": "FlowUs", "url": "https://flowus.cn" },
+          { "name": "flomo", "url": "https://flomoapp.com/" },
           { "name": "腾讯文档", "url": "https://docs.qq.com" },
           { "name": "石墨文档", "url": "https://shimo.im" },
           { "name": "飞书文档", "url": "https://feishu.cn" },
           { "name": "简书", "url": "https://www.jianshu.com" },
-          { "name": "知乎创作中心", "url": "https://www.zhihu.com" },
           { "name": "微信公众号平台", "url": "https://mp.weixin.qq.com" }
         ]
       },
@@ -95,7 +95,7 @@
           { "name": "draw.io", "url": "https://app.diagrams.net" },
           { "name": "Xmind", "url": "https://www.xmind.cn/" },
           { "name": "傲软录屏", "url": "https://www.apowersoft.cn/" },
-          { "name": "文档格式转化", "url": "https://www.ilovepdf.com/" }
+          { "name": "文档格式转化", "url": "https://www.pdfpai.com/" }
         ]
       },
       {
@@ -113,9 +113,285 @@
       }
     ]
   },
-  { "title": "成长", "categories": [] },
-  { "title": "探索", "categories": [] },
-  { "title": "滋养", "categories": [] },
-  { "title": "生活", "categories": [] },
-  { "title": "其他", "categories": [] }
+  {
+    "title": "成长",
+    "categories": [
+      {
+        "name": "阅读",
+        "links": [
+          { "name": "微信读书", "url": "https://weread.qq.com" },
+          { "name": "豆瓣读书", "url": "https://book.douban.com" },
+          { "name": "得到", "url": "https://www.dedao.cn" },
+          { "name": "Kindle中国", "url": "https://www.amazon.cn" },
+          { "name": "国家图书馆", "url": "https://www.nlc.cn" },
+          { "name": "古诗文网", "url": "https://www.gushiwen.cn" },
+          { "name": "三联生活周刊", "url": "https://www.lifeweek.com.cn" },
+          { "name": "单向街书店", "url": "https://www.danxiangjie.com" }
+        ]
+      },
+      {
+        "name": "课程",
+        "links": [
+          { "name": "B站", "url": "https://www.bilibili.com" },
+          { "name": "中国大学MOOC", "url": "https://www.icourse163.org" },
+          { "name": "学堂在线", "url": "https://www.xuetangx.com" },
+          { "name": "网易公开课", "url": "https://open.163.com" },
+          { "name": "极客时间", "url": "https://time.geekbang.org/" },
+          { "name": "混沌学园", "url": "https://www.hundun.cn" },
+          { "name": "Coursera", "url": "https://www.coursera.org" },
+          { "name": "edX", "url": "https://www.edx.org" }
+        ]
+      },
+      {
+        "name": "认知",
+        "links": [
+          { "name": "McKinsey Insights", "url": "https://www.mckinsey.com/featured-insights" },
+          { "name": "Bain Insights", "url": "https://www.bain.com/insights" },
+          { "name": "Harvard Business Review", "url": "https://hbr.org" },
+          { "name": "文化纵横", "url": "https://www.whzh.net" },
+          { "name": "TED", "url": "https://www.ted.com/" },
+          { "name": "国家人文历史", "url": "https://www.gjrwls.com" },
+          { "name": "国家地理中文", "url": "https://www.nationalgeographic.com.cn" },
+          { "name": "看理想", "url": "https://www.kanjian.com" }
+        ]
+      },
+      {
+        "name": "身心",
+        "links": [
+          { "name": "中国心理学会", "url": "https://www.cpsbeijing.org" },
+          { "name": "简单心理", "url": "https://www.jiandanxinli.com" },
+          { "name": "中国哲学书电子化", "url": "https://ctext.org/" },
+          { "name": "哲学园", "url": "https://www.philcommunity.org" },
+          { "name": "哲学在线", "url": "https://www.philonline.org" },
+          { "name": "荣格斯", "url": "https://www.jungus.cn/" },
+          { "name": "人类图", "url": "https://www.jovianarchive.com" },
+          { "name": "16型人格", "url": "https://www.16personalities.com" }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "探索",
+    "categories": [
+      {
+        "name": "科技",
+        "links": [
+          { "name": "少数派", "url": "https://sspai.com" },
+          { "name": "爱范儿", "url": "https://www.ifanr.com" },
+          { "name": "36氪", "url": "https://36kr.com" },
+          { "name": "V2EX", "url": "https://www.v2ex.com" },
+          { "name": "科学网", "url": "https://www.sciencenet.cn" },
+          { "name": "果壳", "url": "https://www.guokr.com" },
+          { "name": "科技日报", "url": "https://www.stdaily.com" },
+          { "name": "TechCrunch", "url": "https://techcrunch.com" }
+        ]
+      },
+      {
+        "name": "历史",
+        "links": [
+          { "name": "国家文物局", "url": "https://www.ncha.gov.cn" },
+          { "name": "故宫博物院", "url": "https://www.dpm.org.cn" },
+          { "name": "中国考古网", "url": "http://www.kaogu.cn" },
+          { "name": "中国历史研究院", "url": "https://www.cssn.cn" },
+          { "name": "全历史", "url": "https://www.allhistory.com/" },
+          { "name": "中国方志网", "url": "https://www.difangzhi.cn" },
+          { "name": "历史上的今天", "url": "https://www.historytoday.com" },
+          { "name": "国家人文历史", "url": "https://www.gjrwls.com" }
+        ]
+      },
+      {
+        "name": "文化",
+        "links": [
+          { "name": "凤凰文化", "url": "https://culture.ifeng.com" },
+          { "name": "理想国", "url": "https://www.imaginist.com.cn" },
+          { "name": "南方人物周刊", "url": "https://www.nfpeople.com" },
+          { "name": "人物", "url": "https://www.renwumag.com" },
+          { "name": "中国作家网", "url": "https://www.chinawriter.com.cn" },
+          { "name": "国家大剧院", "url": "https://www.chncpa.org" },
+          { "name": "Aeon", "url": "https://aeon.co" },
+          { "name": "TheMarginalian", "url": "https://www.themarginalian.org" }
+        ]
+      },
+      {
+        "name": "世界",
+        "links": [
+          { "name": "中国国家地理", "url": "https://www.dili360.com" },
+          { "name": "国家天文台", "url": "https://www.nao.cas.cn" },
+          { "name": "NASA", "url": "https://www.nasa.gov" },
+          { "name": "ESA", "url": "https://www.esa.int" },
+          { "name": "全景看世界", "url": "https://www.airpano.com/360photo_list.php" },
+          { "name": "国家统计局", "url": "https://www.stats.gov.cn" },
+          { "name": "自然资源部", "url": "https://www.mnr.gov.cn" },
+          { "name": "联合国新闻", "url": "https://news.un.org/zh" }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "滋养",
+    "categories": [
+      {
+        "name": "听听",
+        "links": [
+          { "name": "网易云音乐", "url": "https://music.163.com" },
+          { "name": "QQ音乐", "url": "https://y.qq.com" },
+          { "name": "Apple Music", "url": "https://music.apple.com" },
+          { "name": "AllMusic", "url": "https://www.allmusic.com" },
+          { "name": "小宇宙", "url": "https://www.xiaoyuzhoufm.com" },
+          { "name": "喜马拉雅", "url": "https://www.ximalaya.com" },
+          { "name": "Apple Podcasts", "url": "https://podcasts.apple.com" },
+          { "name": "豆瓣音乐", "url": "https://music.douban.com" }
+        ]
+      },
+      {
+        "name": "看看",
+        "links": [
+          { "name": "豆瓣电影", "url": "https://movie.douban.com" },
+          { "name": "烂番茄", "url": "https://www.rottentomatoes.com" },
+          { "name": "腾讯视频", "url": "https://v.qq.com" },
+          { "name": "爱奇艺", "url": "https://www.iqiyi.com" },
+          { "name": "CCTV纪录", "url": "https://tv.cctv.com" },
+          { "name": "国家地理", "url": "https://www.nationalgeographic.com" },
+          { "name": "Arte.tv", "url": "https://www.arte.tv" },
+          { "name": "戛纳电影节", "url": "https://www.festival-cannes.com" }
+        ]
+      },
+      {
+        "name": "品品",
+        "links": [
+          { "name": "下厨房", "url": "https://www.xiachufang.com" },
+          { "name": "美食天下", "url": "https://www.meishichina.com" },
+          { "name": "TasteAtlas", "url": "https://www.tasteatlas.com" },
+          { "name": "Eater", "url": "https://www.eater.com" },
+          { "name": "ChefSteps", "url": "https://www.chefsteps.com" },
+          { "name": "中国饮食文化网", "url": "http://www.chinacaipu.com" },
+          { "name": "大众点评", "url": "https://www.dianping.com" },
+          { "name": "中国烹饪协会", "url": "https://www.ccas.com.cn" }
+        ]
+      },
+      {
+        "name": "走走",
+        "links": [
+          { "name": "国家地理", "url": "https://www.nationalgeographic.com" },
+          { "name": "中国国家地理", "url": "https://www.dili360.com" },
+          { "name": "500px", "url": "https://500px.com" },
+          { "name": "摄影之友", "url": "https://www.photofans.cn" },
+          { "name": "携程旅行", "url": "https://www.ctrip.com" },
+          { "name": "马蜂窝", "url": "https://www.mafengwo.cn" },
+          { "name": "Windy", "url": "https://www.windy.com" },
+          { "name": "日本旅居", "url": "https://song.al/" }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "生活",
+    "categories": [
+      {
+        "name": "购物",
+        "links": [
+          { "name": "淘宝", "url": "https://www.taobao.com" },
+          { "name": "天猫", "url": "https://www.tmall.com" },
+          { "name": "京东", "url": "https://www.jd.com" },
+          { "name": "什么值得买", "url": "https://www.smzdm.com" },
+          { "name": "Apple中国", "url": "https://www.apple.com.cn" },
+          { "name": "宜家", "url": "https://www.ikea.cn" },
+          { "name": "山姆会员商店", "url": "https://www.samsclub.cn" },
+          { "name": "Costco中国", "url": "https://www.costco.com.cn" }
+        ]
+      },
+      {
+        "name": "出行",
+        "links": [
+          { "name": "高德地图", "url": "https://www.amap.com" },
+          { "name": "百度地图", "url": "https://map.baidu.com" },
+          { "name": "Google Maps", "url": "https://maps.google.com" },
+          { "name": "12306", "url": "https://www.12306.cn" },
+          { "name": "携程旅行", "url": "https://www.ctrip.com" },
+          { "name": "Airbnb", "url": "https://www.airbnb.com" },
+          { "name": "东方航空", "url": "https://www.ceair.com" },
+          { "name": "南方航空", "url": "https://www.csair.com" }
+        ]
+      },
+      {
+        "name": "理财",
+        "links": [
+          { "name": "雪球", "url": "https://xueqiu.com/" },
+          { "name": "Boss直聘", "url": "https://www.zhipin.com/" },
+          { "name": "猎聘", "url": "https://www.liepin.com/" },
+          { "name": "脉脉", "url": "https://maimai.cn/" }
+        ]
+      },
+      {
+        "name": "服务",
+        "links": [
+          { "name": "贝壳找房", "url": "https://www.ke.com" },
+          { "name": "快递100", "url": "https://www.kuaidi100.com" },
+          { "name": "京东物流", "url": "https://www.jdl.com" },
+          { "name": "大麦网", "url": "https://www.damai.cn/" },
+          { "name": "汽车之家", "url": "https://www.autohome.com.cn" },
+          { "name": "百度网盘", "url": "https://pan.baidu.com" },
+          { "name": "夸克网盘", "url": "https://pan.quark.cn/" },
+          { "name": "谷歌翻译", "url": "https://translate.google.com/?hl=zh-cn&sl=auto&tl=zh-CN&op=translate" }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "其他",
+    "categories": [
+      {
+        "name": "收集",
+        "links": [
+          { "name": "琪琪影院", "url": "https://www.szxwwj.com/" },
+          { "name": "4K影院", "url": "https://ifn.watch/" },
+          { "name": "芒果影院", "url": "https://www.mgttv.com/" },
+          { "name": "视频下载", "url": "https://downloadhd.net/" },
+          { "name": "短视频下载", "url": "https://www.v2ob.com/" },
+          { "name": "X视频下载", "url": "https://ttget.com/" },
+          { "name": "Y视频下载", "url": "https://ripyoutube.com/en1" },
+          { "name": "Z-Lib", "url": "https://z-library.sk/" }
+        ]
+      },
+      {
+        "name": "在线",
+        "links": [
+          { "name": "去水印", "url": "https://inpaintweb.lxfater.com/" },
+          { "name": "工具箱", "url": "https://www.dute.org/" },
+          { "name": "解压缩", "url": "http://extract.me/cn/" },
+          { "name": "字体对比", "url": "https://www.fontshow.com/zh" },
+          { "name": "Logo设计", "url": "https://iconbuddy.com/logo-maker" },
+          { "name": "图标生成", "url": "https://favicon.io/" },
+          { "name": "文字卡片", "url": "https://retro.iwhy.dev/" },
+          { "name": "图床", "url": "https://www.beeimg.cn/" }
+        ]
+      },
+      {
+        "name": "工具",
+        "links": [
+          { "name": "看报刊", "url": "http://www.53bk.com/baokan/" },
+          { "name": "学法律", "url": "https://www.justlaws.cn/" },
+          { "name": "下壁纸", "url": "https://wallspic.com/cn" },
+          { "name": "老游戏", "url": "https://zaixianwan.app/" },
+          { "name": "学象棋", "url": "https://lichess.org/zh" },
+          { "name": "弹钢琴", "url": "https://touchpianist.com/" },
+          { "name": "选token", "url": "https://www.coding-plan.xyz/" },
+          { "name": "趣网址", "url": "https://youquhome.com/" }
+        ]
+      },
+      {
+        "name": "仓库",
+        "links": [
+          { "name": "Mac软件", "url": "https://wangchujiang.com/awesome-mac/" },
+          { "name": "Mac软件", "url": "https://macwk.cn/" },
+          { "name": "安卓修改", "url": "https://modyolo.com/" },
+          { "name": "历史APK", "url": "https://www.wandoujia.com/" },
+          { "name": "图标", "url": "https://thesvg.org/" },
+          { "name": "插画", "url": "https://www.opendoodles.com/" },
+          { "name": "插图", "url": "https://undraw.co/" },
+          { "name": "字体", "url": "https://www.potatofield.cn/fontlibrary" }
+        ]
+      }
+    ]
+  }
 ]
