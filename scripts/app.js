@@ -38,6 +38,19 @@ const bgFileInput = document.getElementById("bg-file-input");
 const exploreToggle = document.getElementById("explore-toggle");
 const explorePanel = document.getElementById("explore-panel");
 const exploreModules = document.getElementById("explore-modules");
+const exploreEditBtn = document.getElementById("explore-edit-btn");
+const exploreCancelBtn = document.getElementById("explore-cancel-btn");
+const exploreRestoreBtn = document.getElementById("explore-restore-btn");
+const exploreAddOverlay = document.getElementById("explore-add-overlay");
+const exploreAddName = document.getElementById("explore-add-name");
+const exploreAddUrl = document.getElementById("explore-add-url");
+const exploreAddConfirmBtn = document.getElementById("explore-add-confirm-btn");
+const exploreAddCancelBtn = document.getElementById("explore-add-cancel-btn");
+const exploreAddError = document.getElementById("explore-add-error");
+const exploreConfirmOverlay = document.getElementById("explore-confirm-overlay");
+const exploreConfirmMsg = document.getElementById("explore-confirm-msg");
+const exploreConfirmOkBtn = document.getElementById("explore-confirm-ok-btn");
+const exploreConfirmCancelBtn = document.getElementById("explore-confirm-cancel-btn");
 
 const HISTORY_LAYOUT_KEY = "one-search-history-layout";
 let historyLayout = localStorage.getItem(HISTORY_LAYOUT_KEY) === "compact" ? "compact" : "detail";
@@ -428,6 +441,14 @@ input.addEventListener("keydown", (event) => {
   }
 
   if (event.key === "Escape") {
+    if (!exploreConfirmOverlay.hidden) {
+      exploreConfirmCancelBtn.click();
+      return;
+    }
+    if (!exploreAddOverlay.hidden) {
+      hideAddDialog();
+      return;
+    }
     if (!explorePanel.hidden) {
       closeExplorePanel();
       return;
@@ -566,10 +587,190 @@ function setExploreOpen(open) {
   hintTicker.setExploreOpen(open);
 }
 
-// ---------- Navigation data & rendering ----------
+// ---------- Navigation data & persistence ----------
 
+const NAV_STORAGE_KEY = "one-search-nav-custom";
 const FALLBACK_FAVICON =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235b6d85' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='2' y1='12' x2='22' y2='12'/%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/%3E%3C/svg%3E";
+
+let navData = null;
+let originalNavSnapshot = null;
+let isEditing = false;
+
+// references set by renderExploreModules for re-render
+let _showCategory = null;
+let _currentSectionIdx = 0;
+let _currentCatIdx = 0;
+
+function resetEditUI() {
+  isEditing = false;
+  exploreEditBtn.textContent = "编辑";
+  exploreEditBtn.classList.remove("explore-save-btn");
+  exploreCancelBtn.hidden = true;
+  exploreRestoreBtn.hidden = true;
+  explorePanel.classList.remove("is-editing");
+}
+
+function rerenderCurrentView() {
+  if (_showCategory) _showCategory(_currentCatIdx);
+}
+
+async function loadNavData() {
+  const saved = localStorage.getItem(NAV_STORAGE_KEY);
+  if (saved) {
+    try { return JSON.parse(saved); } catch { /* ignore corrupt data */ }
+  }
+  try {
+    const res = await fetch("data/navigation.json");
+    if (!res.ok) throw new Error("not found");
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+function saveNavDataToStorage(data) {
+  localStorage.setItem(NAV_STORAGE_KEY, JSON.stringify(data));
+}
+
+function clearNavStorage() {
+  localStorage.removeItem(NAV_STORAGE_KEY);
+}
+
+// ---------- Edit mode ----------
+
+function enterEditMode() {
+  isEditing = true;
+  originalNavSnapshot = structuredClone(navData);
+  exploreEditBtn.textContent = "保存";
+  exploreEditBtn.classList.add("explore-save-btn");
+  exploreCancelBtn.hidden = false;
+  exploreRestoreBtn.hidden = false;
+  explorePanel.classList.add("is-editing");
+  rerenderCurrentView();
+}
+
+function exitEditMode(saveChanges) {
+  if (saveChanges) {
+    saveNavDataToStorage(navData);
+  }
+  resetEditUI();
+
+  if (!saveChanges) {
+    navData = originalNavSnapshot;
+    renderExploreModules(navData);
+    return;
+  }
+
+  rerenderCurrentView();
+}
+
+exploreEditBtn.addEventListener("click", () => {
+  if (isEditing) {
+    exitEditMode(true);
+  } else {
+    enterEditMode();
+  }
+});
+
+exploreCancelBtn.addEventListener("click", () => {
+  exitEditMode(false);
+});
+
+exploreRestoreBtn.addEventListener("click", () => {
+  showConfirmDialog("确定恢复默认网址导航？当前编辑的网址将被清除。", {
+    onConfirm: () => {
+      clearNavStorage();
+      navData = null;
+      loadNavData().then((data) => {
+        navData = data;
+        originalNavSnapshot = null;
+        resetEditUI();
+        renderExploreModules(data);
+      });
+    },
+  });
+});
+
+// ---------- Add-link dialog ----------
+
+function showAddDialog() {
+  exploreAddOverlay.hidden = false;
+  exploreAddError.hidden = true;
+  exploreAddName.value = "";
+  exploreAddUrl.value = "";
+  exploreAddName.focus();
+}
+
+function hideAddDialog() {
+  exploreAddOverlay.hidden = true;
+}
+
+exploreAddCancelBtn.addEventListener("click", hideAddDialog);
+
+exploreAddConfirmBtn.addEventListener("click", () => {
+  const name = exploreAddName.value.trim();
+  const url = exploreAddUrl.value.trim();
+  if (!name || !url) {
+    exploreAddError.textContent = "请填写网站名称和网址";
+    exploreAddError.hidden = false;
+    return;
+  }
+  try {
+    new URL(url);
+  } catch {
+    exploreAddError.textContent = "请按照给定格式输入有效的网址";
+    exploreAddError.hidden = false;
+    return;
+  }
+  exploreAddError.hidden = true;
+  const cat = navData[_currentSectionIdx].categories[_currentCatIdx];
+  cat.links.push({ name, url });
+  hideAddDialog();
+  rerenderCurrentView();
+});
+
+// close add dialog on overlay click
+exploreAddOverlay.addEventListener("click", (e) => {
+  if (e.target === exploreAddOverlay) hideAddDialog();
+});
+
+// ---------- Generic confirm dialog ----------
+
+let _confirmAbort = null;
+
+function showConfirmDialog(message, { onConfirm, onCancel } = {}) {
+  _confirmAbort?.abort();
+  const controller = new AbortController();
+  _confirmAbort = controller;
+  const { signal } = controller;
+
+  exploreConfirmMsg.textContent = message;
+  exploreConfirmOverlay.hidden = false;
+  exploreConfirmOkBtn.focus();
+
+  exploreConfirmOkBtn.addEventListener("click", () => {
+    controller.abort();
+    exploreConfirmOverlay.hidden = true;
+    if (onConfirm) onConfirm();
+  }, { signal });
+
+  exploreConfirmCancelBtn.addEventListener("click", () => {
+    controller.abort();
+    exploreConfirmOverlay.hidden = true;
+    if (onCancel) onCancel();
+  }, { signal });
+
+  exploreConfirmOverlay.addEventListener("click", (e) => {
+    if (e.target === exploreConfirmOverlay) {
+      controller.abort();
+      exploreConfirmOverlay.hidden = true;
+      if (onCancel) onCancel();
+    }
+  }, { signal });
+}
+
+// ---------- Rendering ----------
 
 function faviconUrl(url) {
   try {
@@ -581,24 +782,27 @@ function faviconUrl(url) {
 }
 
 function renderExploreModules(data) {
+  navData = data;
   exploreModules.replaceChildren();
 
-  // ---- section-level horizontal tab bar ----
   const sectionTabs = document.createElement("div");
   sectionTabs.className = "explore-section-tabs";
 
-  let activeSection = data.findIndex((s) => s.categories && s.categories.length > 0);
-  if (activeSection < 0) activeSection = 0;
+  _currentSectionIdx = data.findIndex((s) => s.categories && s.categories.length > 0);
+  if (_currentSectionIdx < 0) _currentSectionIdx = 0;
+
+  function setActiveTab(container, activeIndex) {
+    for (let i = 0; i < container.children.length; i++) {
+      container.children[i].classList.toggle("is-active", i === activeIndex);
+    }
+  }
 
   function showSection(index) {
-    activeSection = index;
-    for (const [i, tab] of [...sectionTabs.children].entries()) {
-      tab.classList.toggle("is-active", i === index);
-    }
+    _currentSectionIdx = index;
+    setActiveTab(sectionTabs, index);
 
     const section = data[index];
 
-    // ensure a module-body wrapper exists
     let body = exploreModules.querySelector(".explore-module-body");
     if (body) body.replaceChildren();
     else {
@@ -613,23 +817,78 @@ function renderExploreModules(data) {
     const content = document.createElement("div");
     content.className = "explore-content";
 
-    let activeCat = 0;
-
     function showCategory(ci) {
-      activeCat = ci;
-      for (const [i, tab] of [...catTabs.children].entries()) {
-        tab.classList.toggle("is-active", i === ci);
-      }
+      _currentCatIdx = ci;
+      setActiveTab(catTabs, ci);
       const cat = section.categories[ci];
       content.replaceChildren();
       const grid = document.createElement("div");
       grid.className = "explore-grid";
-      for (const link of cat.links) {
+
+      for (const [linkIndex, link] of cat.links.entries()) {
         const card = document.createElement("a");
         card.className = "explore-site-card";
         card.href = link.url;
         card.target = "_blank";
         card.rel = "noopener noreferrer";
+
+        if (isEditing) {
+          card.classList.add("is-editing");
+          card.draggable = true;
+
+          // prevent navigation in edit mode
+          card.addEventListener("click", (e) => {
+            e.preventDefault();
+          });
+
+          // delete button
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "explore-delete-btn";
+          delBtn.textContent = "−";
+          delBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            cat.links.splice(linkIndex, 1);
+            rerenderCurrentView();
+          });
+          card.appendChild(delBtn);
+
+          // drag-and-drop handlers
+          card.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", String(linkIndex));
+            e.dataTransfer.effectAllowed = "move";
+            card.classList.add("is-dragging");
+          });
+
+          card.addEventListener("dragend", () => {
+            card.classList.remove("is-dragging");
+            grid.querySelectorAll(".is-drag-over").forEach((el) => el.classList.remove("is-drag-over"));
+          });
+
+          card.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            grid.querySelectorAll(".is-drag-over").forEach((el) => el.classList.remove("is-drag-over"));
+            card.classList.add("is-drag-over");
+          });
+
+          card.addEventListener("dragleave", (e) => {
+            if (!card.contains(e.relatedTarget)) {
+              card.classList.remove("is-drag-over");
+            }
+          });
+
+          card.addEventListener("drop", (e) => {
+            e.preventDefault();
+            card.classList.remove("is-drag-over");
+            const fromIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
+            if (isNaN(fromIndex) || fromIndex === linkIndex) return;
+            // swap positions
+            [cat.links[fromIndex], cat.links[linkIndex]] = [cat.links[linkIndex], cat.links[fromIndex]];
+            rerenderCurrentView();
+          });
+        }
 
         const img = document.createElement("img");
         img.className = "explore-favicon";
@@ -647,15 +906,30 @@ function renderExploreModules(data) {
         card.append(img, name);
         grid.appendChild(card);
       }
+
+      // add-card button (edit mode)
+      if (isEditing) {
+        const addCard = document.createElement("button");
+        addCard.type = "button";
+        addCard.className = "explore-add-card";
+        addCard.textContent = "+";
+        addCard.addEventListener("click", () => showAddDialog());
+        grid.appendChild(addCard);
+      }
+
       content.appendChild(grid);
     }
+
+    _showCategory = showCategory;
 
     for (const [i, cat] of section.categories.entries()) {
       const tab = document.createElement("button");
       tab.type = "button";
       tab.className = "explore-tab";
       tab.textContent = cat.name;
-      tab.addEventListener("click", () => showCategory(i));
+      tab.addEventListener("click", () => {
+        showCategory(i);
+      });
       catTabs.appendChild(tab);
     }
 
@@ -674,28 +948,19 @@ function renderExploreModules(data) {
     } else {
       tab.addEventListener("click", () => showSection(i));
     }
-    if (i === activeSection) tab.classList.add("is-active");
+    if (i === _currentSectionIdx) tab.classList.add("is-active");
     sectionTabs.appendChild(tab);
   }
 
   exploreModules.append(sectionTabs);
-  showSection(activeSection);
+  showSection(_currentSectionIdx);
 }
 
-async function loadNavData() {
-  try {
-    const res = await fetch("data/navigation.json");
-    if (!res.ok) throw new Error("not found");
-    return res.json();
-  } catch {
-    return [];
-  }
-}
+// ---------- Open / close ----------
 
 async function openExplorePanel() {
   setExploreOpen(true);
 
-  // load and render navigation if first open
   if (!exploreModules.children.length) {
     const data = await loadNavData();
     renderExploreModules(data);
@@ -712,6 +977,16 @@ function toggleExplorePanel() {
 }
 
 function closeExplorePanel() {
+  if (isEditing) {
+    showConfirmDialog("是否保存更改？", {
+      onConfirm: () => {
+        saveNavDataToStorage(navData);
+        resetEditUI();
+        setExploreOpen(false);
+      },
+    });
+    return;
+  }
   setExploreOpen(false);
 }
 

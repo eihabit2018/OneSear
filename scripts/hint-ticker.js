@@ -8,7 +8,6 @@ export function initHintTicker(lineElement) {
   let exploreOpen = false;
 
   function refresh() {
-    lineElement.classList.remove("ticker-out", "ticker-in");
     if (exploreOpen) {
       lineElement.textContent = EXPLORE_OPEN_HINT;
     } else if (historyOpen) {

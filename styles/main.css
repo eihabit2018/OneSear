@@ -649,6 +649,76 @@ h1 {
   max-height: min(660px, 74vh);
   overflow-y: auto;
   backdrop-filter: blur(20px);
+  position: relative;
+}
+
+/* ---- explore header ---- */
+
+.explore-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.explore-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.explore-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.explore-action-btn {
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.explore-action-btn:hover {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+.explore-save-btn {
+  background: var(--accent);
+  color: white;
+  border-color: transparent;
+}
+
+.explore-save-btn:hover {
+  background: var(--accent);
+  opacity: 0.88;
+  color: white;
+}
+
+.explore-restore-btn {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.explore-restore-btn:hover {
+  color: var(--error);
 }
 
 /* ---------- Module ---------- */
@@ -676,12 +746,14 @@ h1 {
   transition: background 0.18s ease, color 0.18s ease;
 }
 
-.explore-section-tab:hover {
+.explore-section-tab:hover,
+.explore-tab:hover {
   background: var(--accent-soft);
   color: var(--text);
 }
 
-.explore-section-tab.is-active {
+.explore-section-tab.is-active,
+.explore-tab.is-active {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
@@ -697,7 +769,6 @@ h1 {
 
 .explore-module-body {
   display: flex;
-  gap: 0;
 }
 
 /* ---- category tabs (left sidebar) ---- */
@@ -725,17 +796,6 @@ h1 {
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.explore-tab:hover {
-  background: var(--accent-soft);
-  color: var(--text);
-}
-
-.explore-tab.is-active {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 600;
-}
-
 /* ---------- Content (right area) ---------- */
 
 .explore-content {
@@ -747,7 +807,6 @@ h1 {
 .explore-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
   gap: 10px;
 }
 
@@ -764,13 +823,81 @@ h1 {
   color: var(--text);
   text-decoration: none;
   font-size: 0.85rem;
-  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease, opacity 0.15s ease;
+  position: relative;
 }
 
 .explore-site-card:hover {
   background: var(--accent-soft);
   border-color: transparent;
   transform: translateY(-1px);
+}
+
+/* ---- delete button (edit mode) ---- */
+
+.explore-delete-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--error);
+  color: white;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding: 0;
+}
+
+.explore-site-card.is-editing .explore-delete-btn {
+  display: flex;
+}
+
+/* ---- add card (edit mode) ---- */
+
+.explore-add-card {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--surface-border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.explore-add-card:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.is-editing .explore-add-card {
+  display: flex;
+}
+
+/* ---- drag-and-drop states (edit mode) ---- */
+
+.explore-site-card.is-dragging {
+  opacity: 0.35;
+  transform: scale(0.92);
+}
+
+.explore-site-card.is-drag-over {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 4px 16px rgba(79, 70, 229, 0.18);
+  transform: scale(1.04);
+  z-index: 1;
 }
 
 .explore-favicon {
@@ -787,10 +914,84 @@ h1 {
   white-space: nowrap;
 }
 
+/* ---- add-link dialog ---- */
+
+.explore-add-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.35);
+  border-radius: var(--radius);
+  z-index: 10;
+}
+
+.explore-add-dialog {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  padding: 24px;
+  width: min(360px, 88%);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+}
+
+.explore-add-dialog h3 {
+  margin: 0 0 18px;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.explore-add-dialog label {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.explore-add-dialog input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.explore-add-dialog input:focus {
+  border-color: var(--accent);
+}
+
+.explore-add-error {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  color: var(--error);
+}
+
+.explore-confirm-msg {
+  margin: 0 0 18px;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.explore-add-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
 @media (max-width: 640px) {
   .explore-grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(4, 1fr);
   }
   .explore-tabs {
     width: 60px;

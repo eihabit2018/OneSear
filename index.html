@@ -136,7 +136,43 @@
         </div>
 
         <div id="explore-panel" class="explore-panel" hidden>
-          <div id="explore-modules" class="explore-modules"></div>
+          <div class="explore-header">
+            <h2 class="explore-title">网址导航</h2>
+            <div class="explore-header-actions">
+              <button id="explore-cancel-btn" type="button" class="explore-action-btn" hidden>取消</button>
+              <button id="explore-edit-btn" type="button" class="explore-action-btn">编辑</button>
+              <button id="explore-restore-btn" type="button" class="explore-restore-btn" hidden>恢复默认</button>
+            </div>
+          </div>
+          <div id="explore-modules"></div>
+
+          <div id="explore-add-overlay" class="explore-add-overlay" hidden>
+            <div class="explore-add-dialog">
+              <h3>添加网址</h3>
+              <label>名称
+                <input id="explore-add-name" type="text" placeholder="网站名称" autocomplete="off">
+              </label>
+              <label>网址
+                <input id="explore-add-url" type="url" placeholder="https://..." autocomplete="off">
+              </label>
+              <p id="explore-add-error" class="explore-add-error" hidden></p>
+              <div class="explore-add-actions">
+                <button id="explore-add-cancel-btn" type="button" class="explore-action-btn">取消</button>
+                <button id="explore-add-confirm-btn" type="button" class="explore-action-btn explore-save-btn">确认</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="explore-confirm-overlay" class="explore-add-overlay" hidden>
+            <div class="explore-add-dialog">
+              <h3>确认</h3>
+              <p id="explore-confirm-msg" class="explore-confirm-msg"></p>
+              <div class="explore-add-actions">
+                <button id="explore-confirm-cancel-btn" type="button" class="explore-action-btn">取消</button>
+                <button id="explore-confirm-ok-btn" type="button" class="explore-action-btn explore-save-btn">确认</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
