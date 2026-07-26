@@ -13,6 +13,8 @@ import {
   parseMentionInput,
 } from "./router.js";
 import { initHelpPanel } from "./help-panel.js";
+import { EXPLORE_TITLE, RESTORE_CONFIRM_MSG } from "./explore-panel.js";
+import { EYEBROW, TITLE } from "./homepage.js";
 import { initHintTicker } from "./hint-ticker.js";
 import { initSubtitleTicker } from "./ticker.js";
 
@@ -843,7 +845,7 @@ exploreCancelBtn.addEventListener("click", () => {
 });
 
 exploreRestoreBtn.addEventListener("click", () => {
-  showConfirmDialog("确定恢复默认网址导航？当前编辑的网址将被清除。", {
+  showConfirmDialog(RESTORE_CONFIRM_MSG, {
     onConfirm: () => {
       clearNavStorage();
       navData = null;
@@ -1190,6 +1192,9 @@ document.addEventListener("click", (event) => {
     closeExplorePanel();
   }
 });
+
+document.querySelector(".eyebrow").textContent = EYEBROW;
+document.querySelector("h1").textContent = TITLE;
 
 loadBackground();
 renderPinnedChips();
