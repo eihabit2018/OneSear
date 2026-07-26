@@ -609,7 +609,7 @@ h1 {
 .bg-settings-btn {
   position: fixed;
   top: 16px;
-  right: 16px;
+  right: 64px;
   z-index: 20;
   display: grid;
   place-items: center;
@@ -647,18 +647,21 @@ h1 {
   transform: scale(0.96);
 }
 
-.bg-menu {
+.popover-panel {
   position: fixed;
-  top: 64px;
-  right: 16px;
   z-index: 19;
-  overflow: hidden;
   border-radius: 16px;
   background: var(--surface);
   border: 1px solid var(--surface-border);
   box-shadow: var(--shadow);
   backdrop-filter: blur(20px);
   animation: fadeUp 0.2s ease;
+}
+
+.bg-menu {
+  top: 64px;
+  right: 64px;
+  overflow: hidden;
   min-width: 180px;
 }
 
@@ -691,6 +694,56 @@ h1 {
 
 .bg-menu-item:hover {
   background: var(--accent-soft);
+}
+
+/* ---- help panel ---- */
+
+.pin-hint-btn {
+  top: 16px;
+  right: 16px;
+}
+
+.help-panel {
+  top: 62px;
+  right: 16px;
+  padding: 20px 22px 16px;
+  width: min(380px, 90vw);
+  text-align: left;
+  line-height: 1.6;
+}
+
+.help-panel h3 {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.help-panel ol {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.help-panel ol li {
+  margin-bottom: 6px;
+}
+
+.help-email {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--surface-border);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.help-email a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.help-email a:hover {
+  text-decoration: underline;
 }
 
 /* ---------- Explore / navigation panel ---------- */

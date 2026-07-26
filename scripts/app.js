@@ -35,6 +35,8 @@ const bgMenu = document.getElementById("bg-menu");
 const bgUploadBtn = document.getElementById("bg-upload-btn");
 const bgResetBtn = document.getElementById("bg-reset-btn");
 const bgFileInput = document.getElementById("bg-file-input");
+const helpBtn = document.getElementById("help-btn");
+const helpPanel = document.getElementById("help-panel");
 
 const exploreToggle = document.getElementById("explore-toggle");
 const explorePanel = document.getElementById("explore-panel");
@@ -217,14 +219,7 @@ function updatePreview() {
   if (parsed.error === "no_mention") {
     if (pinnedEngineIds.length > 0 && input.value.trim()) {
       const query = input.value.trim();
-      const targets = pinnedEngineIds
-        .map((id) => findProviderById(id))
-        .filter(Boolean)
-        .map((provider) => ({
-          provider,
-          mention: provider.aliases[0],
-          url: provider.buildUrl(query),
-        }));
+      const targets = buildTargetsFromPinned(query);
       parsed = { ok: true, query, targets, provider: targets[0].provider, url: targets[0].url };
     } else {
       result.hidden = true;
@@ -274,7 +269,7 @@ function fillCompactChip(chip, text) {
 }
 
 function runHistorySearch(item) {
-  input.value = item.rawInput || formatHistoryCompactText(item);
+  input.value = formatHistoryCompactText(item);
   setHistoryOpen(false);
   renderResult(parseMentionInput(input.value), { autoOpen: true, saveHistory: false });
 }
@@ -349,7 +344,7 @@ function renderHistoryList() {
       <span class="history-time">${formatHistoryTime(item.createdAt)}</span>
     `;
     main.addEventListener("click", () => {
-      input.value = item.rawInput || formatHistoryCompactText(item);
+      input.value = formatHistoryCompactText(item);
       setHistoryOpen(false);
       updatePreview();
       input.focus();
@@ -435,14 +430,7 @@ form.addEventListener("submit", (event) => {
   } else if (parsed.error === "no_mention" && pinnedEngineIds.length > 0) {
     const query = input.value.trim();
     if (query) {
-      const targets = pinnedEngineIds
-        .map((id) => findProviderById(id))
-        .filter(Boolean)
-        .map((provider) => ({
-          provider,
-          mention: provider.aliases[0],
-          url: provider.buildUrl(query),
-        }));
+      const targets = buildTargetsFromPinned(query);
       parsed = { ok: true, query, targets, provider: targets[0].provider, url: targets[0].url };
     }
   }
@@ -518,6 +506,10 @@ input.addEventListener("keydown", (event) => {
       closeBgMenu();
       return;
     }
+    if (!helpPanel.hidden) {
+      closeHelpPanel();
+      return;
+    }
     if (!historyPanel.hidden) {
       setHistoryOpen(false);
       return;
@@ -580,6 +572,8 @@ function unpinEngine(providerId) {
 }
 
 function detectDoubleMentions(rawInput) {
+  // short-circuit: need at least 2 @ chars for a double mention
+  if ((rawInput.match(/@/g) || []).length < 2) return [];
   const mentions = [...rawInput.matchAll(MENTION_PATTERN)];
   const countMap = new Map();
   for (const m of mentions) {
@@ -591,6 +585,21 @@ function detectDoubleMentions(rawInput) {
   return [...countMap.entries()]
     .filter(([, count]) => count >= 2)
     .map(([id]) => id);
+}
+
+function buildTargetsFromPinned(query) {
+  const targets = [];
+  for (const id of pinnedEngineIds) {
+    const provider = findProviderById(id);
+    if (provider) {
+      targets.push({
+        provider,
+        mention: provider.aliases[0],
+        url: provider.buildUrl(query),
+      });
+    }
+  }
+  return targets;
 }
 
 function stripMentionsForPlatform(rawInput, providerId) {
@@ -605,16 +614,13 @@ function stripMentionsForPlatform(rawInput, providerId) {
 
 function checkAndPinDoubleMentions() {
   const doubleIds = detectDoubleMentions(input.value);
-  let changed = false;
   for (const id of doubleIds) {
     pinEngine(id);
     input.value = stripMentionsForPlatform(input.value, id);
-    changed = true;
   }
-  if (changed) {
+  if (doubleIds.length > 0) {
     input.setSelectionRange(input.value.length, input.value.length);
   }
-  return changed;
 }
 
 // ---------- Background settings (IndexedDB) ----------
@@ -699,6 +705,19 @@ function closeBgMenu() {
 }
 
 bgSettingsBtn.addEventListener("click", toggleBgMenu);
+
+function toggleHelpPanel() {
+  const show = helpPanel.hidden;
+  helpPanel.hidden = !show;
+  helpBtn.classList.toggle("is-open", show);
+}
+
+function closeHelpPanel() {
+  helpPanel.hidden = true;
+  helpBtn.classList.remove("is-open");
+}
+
+helpBtn.addEventListener("click", toggleHelpPanel);
 
 bgUploadBtn.addEventListener("click", () => {
   bgFileInput.click();
@@ -1154,6 +1173,13 @@ document.addEventListener("click", (event) => {
     !bgSettingsBtn.contains(event.target)
   ) {
     closeBgMenu();
+  }
+  if (
+    !helpPanel.hidden &&
+    !helpPanel.contains(event.target) &&
+    !helpBtn.contains(event.target)
+  ) {
+    closeHelpPanel();
   }
   if (
     !explorePanel.hidden &&
