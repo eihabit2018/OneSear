@@ -12,6 +12,7 @@ import {
   MENTION_PATTERN,
   parseMentionInput,
 } from "./router.js";
+import { initHelpPanel } from "./help-panel.js";
 import { initHintTicker } from "./hint-ticker.js";
 import { initSubtitleTicker } from "./ticker.js";
 
@@ -1192,6 +1193,7 @@ document.addEventListener("click", (event) => {
 
 loadBackground();
 renderPinnedChips();
+initHelpPanel(helpPanel);
 
 initSubtitleTicker(document.getElementById("subtitle-line"));
 updateHistoryLayoutToggle();
