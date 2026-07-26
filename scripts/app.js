@@ -5,6 +5,7 @@ import {
   removeSearchHistory,
 } from "./history.js";
 import {
+  findProviderByAlias,
   findProviderById,
   filterProviders,
   getActiveMentionFilter,
@@ -52,6 +53,8 @@ const exploreConfirmMsg = document.getElementById("explore-confirm-msg");
 const exploreConfirmOkBtn = document.getElementById("explore-confirm-ok-btn");
 const exploreConfirmCancelBtn = document.getElementById("explore-confirm-cancel-btn");
 
+const pinnedEnginesContainer = document.getElementById("pinned-engines");
+
 const HISTORY_LAYOUT_KEY = "one-search-history-layout";
 let historyLayout = localStorage.getItem(HISTORY_LAYOUT_KEY) === "compact" ? "compact" : "detail";
 
@@ -91,6 +94,7 @@ function insertMention(alias) {
   input.setSelectionRange(nextCaret, nextCaret);
   input.focus();
   hideMentionMenu();
+  checkAndPinDoubleMentions();
   updatePreview();
 }
 
@@ -141,6 +145,7 @@ function selectMentionFromMenu(alias) {
   const nextCaret = before.length + alias.length + 2;
   input.setSelectionRange(nextCaret, nextCaret);
   hideMentionMenu();
+  checkAndPinDoubleMentions();
   updatePreview();
 }
 
@@ -204,10 +209,27 @@ function renderResult(parsed, { autoOpen = true, saveHistory = false } = {}) {
 }
 
 function updatePreview() {
-  const parsed = parseMentionInput(input.value);
-  if (parsed.error === "empty_input" || parsed.error === "no_mention") {
+  let parsed = parseMentionInput(input.value);
+  if (parsed.error === "empty_input") {
     result.hidden = true;
     return;
+  }
+  if (parsed.error === "no_mention") {
+    if (pinnedEngineIds.length > 0 && input.value.trim()) {
+      const query = input.value.trim();
+      const targets = pinnedEngineIds
+        .map((id) => findProviderById(id))
+        .filter(Boolean)
+        .map((provider) => ({
+          provider,
+          mention: provider.aliases[0],
+          url: provider.buildUrl(query),
+        }));
+      parsed = { ok: true, query, targets, provider: targets[0].provider, url: targets[0].url };
+    } else {
+      result.hidden = true;
+      return;
+    }
   }
   renderResult(parsed, { autoOpen: false });
 }
@@ -390,7 +412,42 @@ historyLayoutToggle.addEventListener("click", () => {
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   hideMentionMenu();
-  renderResult(parseMentionInput(input.value), { autoOpen: true, saveHistory: true });
+
+  let parsed = parseMentionInput(input.value);
+
+  // merge pinned engines into search targets
+  if (parsed.ok) {
+    const mentionedIds = new Set(parsed.targets.map((t) => t.provider.id));
+    const extraTargets = [];
+    for (const id of pinnedEngineIds) {
+      if (!mentionedIds.has(id)) {
+        const provider = findProviderById(id);
+        if (provider) {
+          extraTargets.push({
+            provider,
+            mention: provider.aliases[0],
+            url: provider.buildUrl(parsed.query),
+          });
+        }
+      }
+    }
+    parsed = { ...parsed, targets: [...parsed.targets, ...extraTargets] };
+  } else if (parsed.error === "no_mention" && pinnedEngineIds.length > 0) {
+    const query = input.value.trim();
+    if (query) {
+      const targets = pinnedEngineIds
+        .map((id) => findProviderById(id))
+        .filter(Boolean)
+        .map((provider) => ({
+          provider,
+          mention: provider.aliases[0],
+          url: provider.buildUrl(query),
+        }));
+      parsed = { ok: true, query, targets, provider: targets[0].provider, url: targets[0].url };
+    }
+  }
+
+  renderResult(parsed, { autoOpen: true, saveHistory: true });
 });
 
 input.addEventListener("focus", () => {
@@ -407,6 +464,10 @@ input.addEventListener("input", () => {
   } else {
     hideMentionMenu();
   }
+
+  // detect double @mentions and pin engines in real-time
+  checkAndPinDoubleMentions();
+
   updatePreview();
 });
 
@@ -471,6 +532,90 @@ input.addEventListener("keydown", (event) => {
 input.addEventListener("blur", () => {
   window.setTimeout(hideMentionMenu, 120);
 });
+
+// ---------- Pinned search engines ----------
+
+const PINNED_KEY = "one-search-pinned-engines";
+
+let pinnedEngineIds = loadPinnedEngines();
+
+function loadPinnedEngines() {
+  try {
+    const saved = localStorage.getItem(PINNED_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePinnedEngines(ids) {
+  localStorage.setItem(PINNED_KEY, JSON.stringify(ids));
+}
+
+function renderPinnedChips() {
+  pinnedEnginesContainer.replaceChildren();
+  for (const id of pinnedEngineIds) {
+    const provider = findProviderById(id);
+    if (!provider) continue;
+    const chip = document.createElement("span");
+    chip.className = "pinned-chip";
+    chip.title = `点击取消固定 ${provider.name}`;
+    chip.innerHTML = `${provider.name}<span class="pinned-chip-close">×</span>`;
+    chip.addEventListener("click", () => unpinEngine(id));
+    pinnedEnginesContainer.appendChild(chip);
+  }
+}
+
+function pinEngine(providerId) {
+  if (pinnedEngineIds.includes(providerId)) return;
+  pinnedEngineIds.push(providerId);
+  savePinnedEngines(pinnedEngineIds);
+  renderPinnedChips();
+}
+
+function unpinEngine(providerId) {
+  pinnedEngineIds = pinnedEngineIds.filter((id) => id !== providerId);
+  savePinnedEngines(pinnedEngineIds);
+  renderPinnedChips();
+}
+
+function detectDoubleMentions(rawInput) {
+  const mentions = [...rawInput.matchAll(MENTION_PATTERN)];
+  const countMap = new Map();
+  for (const m of mentions) {
+    const provider = findProviderByAlias(m[1]);
+    if (provider) {
+      countMap.set(provider.id, (countMap.get(provider.id) || 0) + 1);
+    }
+  }
+  return [...countMap.entries()]
+    .filter(([, count]) => count >= 2)
+    .map(([id]) => id);
+}
+
+function stripMentionsForPlatform(rawInput, providerId) {
+  const provider = findProviderById(providerId);
+  if (!provider) return rawInput;
+  const escapedAliases = provider.aliases.map((a) =>
+    a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  );
+  const pattern = new RegExp(`@(?:${escapedAliases.join("|")})\\s*`, "gi");
+  return rawInput.replace(pattern, "").replace(/\s+/g, " ").trim();
+}
+
+function checkAndPinDoubleMentions() {
+  const doubleIds = detectDoubleMentions(input.value);
+  let changed = false;
+  for (const id of doubleIds) {
+    pinEngine(id);
+    input.value = stripMentionsForPlatform(input.value, id);
+    changed = true;
+  }
+  if (changed) {
+    input.setSelectionRange(input.value.length, input.value.length);
+  }
+  return changed;
+}
 
 // ---------- Background settings (IndexedDB) ----------
 
@@ -1020,6 +1165,7 @@ document.addEventListener("click", (event) => {
 });
 
 loadBackground();
+renderPinnedChips();
 
 initSubtitleTicker(document.getElementById("subtitle-line"));
 updateHistoryLayoutToggle();
